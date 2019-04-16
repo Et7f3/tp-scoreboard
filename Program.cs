@@ -1,8 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-using System.Dynamic;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace FlappyRunner
@@ -12,10 +10,11 @@ namespace FlappyRunner
         public static Assembly asm;
         public static Type type_bird;
         public static Type type_controller;
-        public static Type type_drawer;
+        //public static Type type_drawer;
         public static Type type_console_drawer;
         public static Type type_pipe;
         public static Type type_deque;
+        //public static StreamWriter sw;
 
         /// <summary>
         /// The main function:
@@ -27,8 +26,10 @@ namespace FlappyRunner
         /// </summary>
         public static int Main(string[] args)
         {
-            if (args.Length < 2)
+            if (args.Length < 1)
                 return -1;// usage firstname.lastname.exe save.txt
+            Console.WriteLine(args[0] + ".log");
+            //sw = new StreamWriter(args[0] + ".log");
 
             if (!File.Exists(args[0]))
                 return -2;// file not exist
@@ -38,35 +39,10 @@ namespace FlappyRunner
                 //Console.WriteLine(type);
             type_bird = asm.GetType("Flappy.Bird");
             type_controller = asm.GetType("Flappy.BestController");
-            type_drawer = asm.GetType("Flappy.Drawer");
+            //type_drawer = asm.GetType("Flappy.Drawer");
             type_console_drawer = asm.GetType("Flappy.ConsoleDrawer");
             type_pipe = asm.GetType("Flappy.Pipe");
             type_deque = asm.GetType("Flappy.Deque`1").MakeGenericType(type_pipe);
-            //Console.WriteLine(type_deque == null);
-            /*
-             * Flappy.BaseController
-Flappy.BestController
-Flappy.Bird
-Flappy.ConsoleDrawer
-Flappy.Controller
-Flappy.Drawer
-Flappy.Game
-Flappy.KeyboardController
-Flappy.KeyboardManager
-Flappy.Manager
-Flappy.MaximaxController
-Flappy.MaximaxController2
-Flappy.Pipe
-Flappy.Program
-Flappy.BaseController+JumpController
-Flappy.BaseController+FallController
-Flappy.MaximaxController
-Flappy.Deque`1+Node[T]
-Flappy.Deque`1+<GetEnumerator>d__13[T]
-Flappy.Game+<>c
-Flappy.MaximaxController+<>c
-Flappy.Deque`1[T]
-             */
 
             if (type_bird == null)
                 return -3;// file don't have right class
@@ -143,20 +119,22 @@ Flappy.Deque`1[T]
                     //game.Draw();
                     //game.Sleep();
                 }
-            }).Wait(1000);
+            }).Wait(30 * 1000);
             // Stop the game
             game.Stop();
             //Console.Clear();
 
             // Write the scores
             //Console.WriteLine("Player scored : " + player.Score);
-            Console.WriteLine("AI scored : " + ai.Score);
-            Console.WriteLine($"AI run : {game.x} pixels");
+            //sw.WriteLine("AI scored : " + ai.Score);
+            //sw.WriteLine($"AI run : {game.x} pixels");
+            //sw.Flush();
+            //sw.Close();
 
             // Read a key (for external terminal users)
             //Console.Read();
             Console.CursorVisible = true;
-            return 0;// success
+            return (int)game.x;// success
         }
     }
 }
