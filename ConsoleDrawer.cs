@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Flappy
+namespace FlappyRunner
 {
     public class ConsoleDrawer: Drawer
     {

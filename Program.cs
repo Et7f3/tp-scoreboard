@@ -2,11 +2,21 @@
 using System.IO;
 using System.Reflection;
 using System.Dynamic;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace Flappy
+namespace FlappyRunner
 {
     internal class Program
     {
+        public static Assembly asm;
+        public static Type type_bird;
+        public static Type type_controller;
+        public static Type type_drawer;
+        public static Type type_console_drawer;
+        public static Type type_pipe;
+        public static Type type_deque;
+
         /// <summary>
         /// The main function:
         /// - Register the managers
@@ -23,18 +33,45 @@ namespace Flappy
             if (!File.Exists(args[0]))
                 return -2;// file not exist
 
-            Assembly asm = Assembly.LoadFrom(args[0]);
+            asm = Assembly.LoadFrom(args[0]);
             //foreach (Type type in asm.GetTypes())
-            //{
-            //    Console.WriteLine(type);
-            //}
-            Type my_bird = asm.GetType("Flappy.Bird");
-            Type my_controller = asm.GetType("Flappy.BestController");
+                //Console.WriteLine(type);
+            type_bird = asm.GetType("Flappy.Bird");
+            type_controller = asm.GetType("Flappy.BestController");
+            type_drawer = asm.GetType("Flappy.Drawer");
+            type_console_drawer = asm.GetType("Flappy.ConsoleDrawer");
+            type_pipe = asm.GetType("Flappy.Pipe");
+            type_deque = asm.GetType("Flappy.Deque`1").MakeGenericType(type_pipe);
+            //Console.WriteLine(type_deque == null);
+            /*
+             * Flappy.BaseController
+Flappy.BestController
+Flappy.Bird
+Flappy.ConsoleDrawer
+Flappy.Controller
+Flappy.Drawer
+Flappy.Game
+Flappy.KeyboardController
+Flappy.KeyboardManager
+Flappy.Manager
+Flappy.MaximaxController
+Flappy.MaximaxController2
+Flappy.Pipe
+Flappy.Program
+Flappy.BaseController+JumpController
+Flappy.BaseController+FallController
+Flappy.MaximaxController
+Flappy.Deque`1+Node[T]
+Flappy.Deque`1+<GetEnumerator>d__13[T]
+Flappy.Game+<>c
+Flappy.MaximaxController+<>c
+Flappy.Deque`1[T]
+             */
 
-            if (my_bird == null)
+            if (type_bird == null)
                 return -3;// file don't have right class
 
-            if (my_controller == null)
+            if (type_controller == null)
                 return -4;// file don't have right class
 
             // Hide the cursor
@@ -47,7 +84,7 @@ namespace Flappy
             //KeyboardManager manager = new KeyboardManager();
 
             // Initialize the console drawer, which will handle the console output
-            ConsoleDrawer drawer = new ConsoleDrawer(Console.WindowWidth, Console.WindowHeight);
+            dynamic drawer = Activator.CreateInstance(type_console_drawer, new object[]{Console.WindowWidth, Console.WindowHeight});
 
             // Initialize the game with the random generator and the output drawer
             Game game = new Game(rnd, drawer);
@@ -60,7 +97,7 @@ namespace Flappy
             //drawer.Associate(player, ConsoleColor.Red);
 
             // Create an AI
-            Console.WriteLine(my_controller.BaseType);
+            //Console.WriteLine(type_controller.BaseType);
 
             //MethodInfo mi = my_controller.GetMethod("ShouldJump", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.InvokeMethod);
 
@@ -81,8 +118,8 @@ namespace Flappy
             //    Console.WriteLine(constructorInfo.Name);
             //}
             //Bird ai = new Bird(controller);
-            dynamic controller = Activator.CreateInstance(my_controller);
-            dynamic ai = Activator.CreateInstance(my_bird, new object[]{controller});
+            dynamic controller = Activator.CreateInstance(type_controller);
+            dynamic ai = Activator.CreateInstance(type_bird, new object[]{controller});
             //Console.WriteLine("begin");
             // Associate the ai with a color in the console drawer
             drawer.Associate(ai, ConsoleColor.Blue);
@@ -96,15 +133,17 @@ namespace Flappy
             //game.Draw();
             
             // While there is someone alive, continue
-            Console.WriteLine("begin loop");
-            while (game.Continue)
+            //Thread.Sleep(200000);
+            Task.Factory.StartNew(() =>
             {
-                // Game loop : update, draw and sleep
-                game.Update();
-                game.Draw();
-                game.Sleep();
-            }
-            Console.WriteLine("end loop");
+                while (game.Continue)
+                {
+                    // Game loop : update, draw and sleep
+                    game.Update();
+                    //game.Draw();
+                    //game.Sleep();
+                }
+            }).Wait(1000);
             // Stop the game
             game.Stop();
             //Console.Clear();
@@ -112,6 +151,7 @@ namespace Flappy
             // Write the scores
             //Console.WriteLine("Player scored : " + player.Score);
             Console.WriteLine("AI scored : " + ai.Score);
+            Console.WriteLine($"AI run : {game.x} pixels");
 
             // Read a key (for external terminal users)
             //Console.Read();

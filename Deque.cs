@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 
-namespace Flappy
+namespace FlappyRunner
 {
     public class Deque<T> : IEnumerable
     {

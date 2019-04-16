@@ -1,6 +1,6 @@
 using System;
 
-namespace Flappy
+namespace FlappyRunner
 {
     public class Bird
     {
@@ -136,7 +136,7 @@ namespace Flappy
         /// <param name="drawer">The drawer</param>
         /// <param name="x">The x coordinate</param>
         /// <param name="pipes">The list of pipes</param>
-        public void Update(Drawer drawer, long x, Deque<Pipe> pipes)
+        public void Update(dynamic drawer, long x, Deque<dynamic> pipes)
         {
             // Get the maximal y value
             int max = drawer.Height - 1;

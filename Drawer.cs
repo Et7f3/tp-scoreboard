@@ -1,4 +1,4 @@
-namespace Flappy
+namespace FlappyRunner
 {
     public abstract class Drawer
     {

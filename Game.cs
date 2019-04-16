@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace Flappy
+namespace FlappyRunner
 {
     public class Game
     {
@@ -29,12 +29,12 @@ namespace Flappy
         /// <summary>
         /// The list of all the pipes
         /// </summary>
-        private Deque<Pipe> pipes;
+        private dynamic pipes;
 
         /// <summary>
         /// The output drawer
         /// </summary>
-        private Drawer drawer;
+        private dynamic drawer;
 
         /// <summary>
         /// The current score
@@ -89,13 +89,13 @@ namespace Flappy
         /// </summary>
         /// <param name="rnd">The random number generator</param>
         /// <param name="drawer">The output drawer</param>
-        public Game(Random rnd, Drawer drawer)
+        public Game(Random rnd, dynamic drawer)
         {
             // Initialize all the fields
             this.rnd = rnd;
             this.x = 0;
             this.birds = new List<dynamic>();
-            this.pipes = new Deque<Pipe>();
+            this.pipes = Activator.CreateInstance(Program.type_deque);
             this.managers = new List<Manager>();
             this.score = 0;
             this.drawer = drawer;
@@ -166,12 +166,12 @@ namespace Flappy
         /// </summary>
         /// <param name="pos">The x coordinate of the pipe</param>
         /// <returns>The generated pipe</returns>
-        private Pipe GeneratePipe(long pos)
+        private dynamic GeneratePipe(long pos)
         {
-            Pipe previous;
+            dynamic previous;
             if (this.pipes.Count == 0)
-                previous = new Pipe(0, (this.drawer.Height - this.free) / 2, this.free,
-                    this.drawer.Height - this.free - (this.drawer.Height - this.free) / 2);
+                previous = Activator.CreateInstance(Program.type_pipe, new object[]{0, (this.drawer.Height - this.free) / 2, this.free,
+                                                                                       this.drawer.Height - this.free - (this.drawer.Height - this.free) / 2});
             else
                 previous = this.pipes.PeekBack();
             int move = this.rnd.Next(-this.bound, this.bound + 1);
@@ -183,7 +183,7 @@ namespace Flappy
             if (top < 0)
                 top = 0;
             int bottom = this.drawer.Height - top - free;
-            Pipe pipe = new Pipe(pos, top, free, bottom);
+            dynamic pipe = Activator.CreateInstance(Program.type_pipe, new object[]{pos, top, free, bottom});
             this.pipes.PushBack(pipe);
             return pipe;
         }
@@ -239,14 +239,15 @@ namespace Flappy
                     this.sleep -= 1;
                 }
                 // Take the first pipe
-                Pipe first = this.pipes.PeekFront();
+                dynamic first = this.pipes.PeekFront();
                 foreach (dynamic bird in this.birds)
                 {
                     // Don't check for dead birds
                     if (bird.Dead)
                         continue;
+                    //Console.WriteLine($"{this.drawer.GetType()}, {this.x.GetType()}, {this.pipes.GetType()}, \n ");
                     // Update the bird
-                    //bird.Update(this.drawer, this.x, this.pipes.DeepCopy(pipe => pipe.DeepCopy()));
+                    bird.Update(this.drawer, this.x, this.pipes/*.DeepCopy(pipe => pipe.DeepCopy())*/);
                     // Kill the bird if it collides with the first pipe
                     if (first.Collides(this.x + 1, bird.Y))
                     {
@@ -277,7 +278,7 @@ namespace Flappy
                 this.drawer.Draw(bird);
             }
             // Draw each pipe
-            foreach (Pipe pipe in this.pipes)
+            foreach (dynamic pipe in this.pipes)
             {
                 this.drawer.Draw(pipe, x);
             }

@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Xml;
 
-namespace Flappy
+namespace FlappyRunner
 {
     public class Pipe
     {
