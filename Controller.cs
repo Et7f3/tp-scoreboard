@@ -16,6 +16,6 @@ namespace Flappy
         /// <param name="x">The x position</param>
         /// <param name="pipes">The list of pipes</param>
         /// <returns>True if the bird should jump, false otherwise</returns>
-        bool ShouldJump(Bird bird, Drawer drawer, long x, Deque<Pipe> pipes);
+        bool ShouldJump(dynamic bird, Drawer drawer, long x, Deque<Pipe> pipes);
     }
 }

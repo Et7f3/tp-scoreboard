@@ -42,7 +42,7 @@ namespace Flappy
         /// <summary>
         /// The associate controller
         /// </summary>
-        private Controller controller;
+        private dynamic controller;
         private long score;
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace Flappy
         /// Initialize a bird
         /// </summary>
         /// <param name="controller">The associate controller</param>
-        public Bird(Controller controller)
+        public Bird(dynamic controller)
         {
             this.y = -1;
             this.dead = false;
@@ -122,7 +122,7 @@ namespace Flappy
         /// </summary>
         /// <param name="controller">The new controller</param>
         /// <returns>A new bird</returns>
-        public Bird DeepCopy(Controller controller)
+        public Bird DeepCopy(dynamic controller)
         {
             Bird res = new Bird(controller);
             res.y = this.y;

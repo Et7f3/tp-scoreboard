@@ -19,7 +19,7 @@ namespace Flappy
         /// <summary>
         /// The list of all the birds
         /// </summary>
-        private List<Bird> birds;
+        private List<dynamic> birds;
 
         /// <summary>
         /// The list of all the managers
@@ -73,7 +73,7 @@ namespace Flappy
         {
             get
             {
-                foreach (Bird bird in this.birds)
+                foreach (dynamic bird in this.birds)
                 {
                     if (!bird.Dead)
                     {
@@ -94,7 +94,7 @@ namespace Flappy
             // Initialize all the fields
             this.rnd = rnd;
             this.x = 0;
-            this.birds = new List<Bird>();
+            this.birds = new List<dynamic>();
             this.pipes = new Deque<Pipe>();
             this.managers = new List<Manager>();
             this.score = 0;
@@ -118,7 +118,7 @@ namespace Flappy
         /// Add a new bird if it has not already been added
         /// </summary>
         /// <param name="bird">The bird to add</param>
-        public void Add(Bird bird)
+        public void Add(dynamic bird)
         {
             if (!this.birds.Contains(bird))
             {
@@ -240,14 +240,13 @@ namespace Flappy
                 }
                 // Take the first pipe
                 Pipe first = this.pipes.PeekFront();
-                foreach (Bird bird in this.birds)
+                foreach (dynamic bird in this.birds)
                 {
                     // Don't check for dead birds
                     if (bird.Dead)
                         continue;
                     // Update the bird
-                    bird.Update(this.drawer, this.x,
-                        this.pipes.DeepCopy(pipe => pipe.DeepCopy()));
+                    //bird.Update(this.drawer, this.x, this.pipes.DeepCopy(pipe => pipe.DeepCopy()));
                     // Kill the bird if it collides with the first pipe
                     if (first.Collides(this.x + 1, bird.Y))
                     {
@@ -271,7 +270,7 @@ namespace Flappy
             // Clear the output
             this.drawer.Clear();
             // Draw each alive bird
-            foreach (Bird bird in this.birds)
+            foreach (dynamic bird in this.birds)
             {
                 if (bird.Dead)
                     continue;

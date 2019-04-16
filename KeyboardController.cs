@@ -53,7 +53,7 @@ namespace Flappy
         /// <param name="x">The x position</param>
         /// <param name="pipes">The list of pipes</param>
         /// <returns>True if the key has been pressed</returns>
-        public bool ShouldJump(Bird bird, Drawer drawer, long x, Deque<Pipe> pipes)
+        public bool ShouldJump(dynamic bird, Drawer drawer, long x, Deque<Pipe> pipes)
         {
             bool pressed = this.pressed;
             this.pressed = false;

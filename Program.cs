@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using System.Dynamic;
 
 namespace Flappy
 {
@@ -61,27 +62,27 @@ namespace Flappy
             // Create an AI
             Console.WriteLine(my_controller.BaseType);
 
-            MethodInfo mi = my_controller.GetMethod("ShouldJump"
-                , BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.InvokeMethod
-            );
+            //MethodInfo mi = my_controller.GetMethod("ShouldJump", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.InvokeMethod);
 
-            MethodInfo mi2 = my_controller.GetTypeInfo().GetDeclaredMethod("ShouldJump");
+            //MethodInfo mi2 = my_controller.GetTypeInfo().GetDeclaredMethod("ShouldJump");
 
-            MethodInfo mi3 = my_controller.GetMethod("ShouldJump");
+            //MethodInfo mi3 = my_controller.GetMethod("ShouldJump");
 
-            MemberInfo mi4 = my_controller.GetMember("ShouldJump")[0];
+            //MemberInfo mi4 = my_controller.GetMember("ShouldJump")[0];
 
-            Console.WriteLine($"mi == null: {mi == null}, mi2 == null: {mi2 == null}, mi3 == null: {mi3 == null}, mi4 == null: {mi4 == null}");
+            //Console.WriteLine($"mi == null: {mi == null}, mi2 == null: {mi2 == null}, mi3 == null: {mi3 == null}, mi4 == null: {mi4 == null}");
 
-            Console.WriteLine($"my_controller.GetMethod(\"ShouldJump\") == null: " + mi3.GetType());
+            //Console.WriteLine($"my_controller.GetMethod(\"ShouldJump\") == null: " + mi3.GetType());
 
-            BestController controller = new Flappy.BestController(mi3, Activator.CreateInstance(my_controller));
+            //BestController controller = new Flappy.BestController(mi3, Activator.CreateInstance(my_controller));
             //Console.WriteLine("begin");
             //foreach (ConstructorInfo constructorInfo in my_bird.GetConstructors(BindingFlags.Public | BindingFlags.NonPublic))
             //{
             //    Console.WriteLine(constructorInfo.Name);
             //}
-            Bird ai = new Bird(controller);
+            //Bird ai = new Bird(controller);
+            dynamic controller = Activator.CreateInstance(my_controller);
+            dynamic ai = Activator.CreateInstance(my_bird, new object[]{controller});
             //Console.WriteLine("begin");
             // Associate the ai with a color in the console drawer
             drawer.Associate(ai, ConsoleColor.Blue);
@@ -95,6 +96,7 @@ namespace Flappy
             //game.Draw();
             
             // While there is someone alive, continue
+            Console.WriteLine("begin loop");
             while (game.Continue)
             {
                 // Game loop : update, draw and sleep
@@ -102,6 +104,7 @@ namespace Flappy
                 game.Draw();
                 game.Sleep();
             }
+            Console.WriteLine("end loop");
             // Stop the game
             game.Stop();
             //Console.Clear();

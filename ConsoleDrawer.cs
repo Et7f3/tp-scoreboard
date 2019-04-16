@@ -18,7 +18,7 @@ namespace Flappy
         /// <summary>
         /// The dictionary associating the birds and their colors
         /// </summary>
-        private Dictionary<Bird, ConsoleColor> colors;
+        private Dictionary<dynamic, ConsoleColor> colors;
         
         /// <summary>
         /// Returns the height of the console
@@ -51,7 +51,7 @@ namespace Flappy
         {
             this.width = width;
             this.height = height;
-            this.colors = new Dictionary<Bird, ConsoleColor>();
+            this.colors = new Dictionary<dynamic, ConsoleColor>();
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace Flappy
         /// </summary>
         /// <param name="bird">the bird</param>
         /// <param name="color">Its color</param>
-        public void Associate(Bird bird, ConsoleColor color)
+        public void Associate(dynamic bird, ConsoleColor color)
         {
             this.colors[bird] = color;
         }
@@ -68,7 +68,7 @@ namespace Flappy
         /// Draw a bird
         /// </summary>
         /// <param name="bird">The bird to draw</param>
-        public override void Draw(Bird bird)
+        public override void Draw(dynamic bird)
         {
             if (bird.Dead)
             {
