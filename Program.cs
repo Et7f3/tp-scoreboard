@@ -14,7 +14,7 @@ namespace FlappyRunner
         public static Type type_console_drawer;
         public static Type type_pipe;
         public static Type type_deque;
-        //public static StreamWriter sw;
+        public static StreamWriter sw;
 
         /// <summary>
         /// The main function:
@@ -26,10 +26,10 @@ namespace FlappyRunner
         /// </summary>
         public static int Main(string[] args)
         {
-            if (args.Length < 1)
+            if (args.Length < 2)
                 return -1;// usage firstname.lastname.exe save.txt
-            Console.WriteLine(args[0] + ".log");
-            //sw = new StreamWriter(args[0] + ".log");
+            //Console.WriteLine(args[0] + ".log");
+            sw = new StreamWriter(args[0] + ".log");
 
             if (!File.Exists(args[0]))
                 return -2;// file not exist
@@ -118,8 +118,13 @@ namespace FlappyRunner
                     game.Update();
                     //game.Draw();
                     //game.Sleep();
+                    if (game.x > int.MaxValue)
+                    {
+                        Console.WriteLine("overflow");
+                        break;
+                    }
                 }
-            }).Wait(30 * 1000);
+            }).Wait(15 * 1000);
             // Stop the game
             game.Stop();
             //Console.Clear();
@@ -127,9 +132,9 @@ namespace FlappyRunner
             // Write the scores
             //Console.WriteLine("Player scored : " + player.Score);
             //sw.WriteLine("AI scored : " + ai.Score);
-            //sw.WriteLine($"AI run : {game.x} pixels");
-            //sw.Flush();
-            //sw.Close();
+            sw.WriteLine(game.x);
+            sw.Flush();
+            sw.Close();
 
             // Read a key (for external terminal users)
             //Console.Read();
