@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FlappyRunner
@@ -26,13 +27,22 @@ namespace FlappyRunner
         /// </summary>
         public static int Main(string[] args)
         {
-            if (args.Length < 2)
-                return -1;// usage firstname.lastname.exe save.txt
+            if (args.Length < 1)
+                {
+                    Console.Error.WriteLine("usage firstname.lastname.exe");
+                    return -1;
+                    // usage firstname.lastname.exe save.txt
+                          }
             //Console.WriteLine(args[0] + ".log");
             sw = new StreamWriter(args[0] + ".log");
 
             if (!File.Exists(args[0]))
-                return -2;// file not exist
+                {
+                    Console.Error.WriteLine("assembly not exist");
+                    return -2;
+            // assembly not exist
+
+           }
 
             asm = Assembly.LoadFrom(args[0]);
             //foreach (Type type in asm.GetTypes())
@@ -45,10 +55,39 @@ namespace FlappyRunner
             type_deque = asm.GetType("Flappy.Deque`1").MakeGenericType(type_pipe);
 
             if (type_bird == null)
-                return -3;// file don't have right class
+            {
+                Console.Error.WriteLine("Flappy.Bird not available");
+                return -3;
+                // file don't have right class
+}
 
             if (type_controller == null)
-                return -4;// file don't have right class
+            {
+                Console.Error.WriteLine("Flappy.BestController not available");
+                return -3;
+                // file don't have right class
+            }
+
+            if (type_console_drawer == null)
+            {
+                Console.Error.WriteLine("Flappy.ConsoleDrawer not available");
+                return -3;
+                // file don't have right class
+            }
+
+            if (type_pipe == null)
+            {
+                Console.Error.WriteLine("Flappy.Pipe not available");
+                return -3;
+                // file don't have right class
+            }
+
+            if (type_deque == null)
+            {
+                Console.Error.WriteLine("Flappy.Deque`1 not available");
+                return -3;
+                // file don't have right class
+            }
 
             // Hide the cursor
             Console.CursorVisible = false;
@@ -112,19 +151,21 @@ namespace FlappyRunner
             //Thread.Sleep(200000);
             Task.Factory.StartNew(() =>
             {
-                while (game.Continue)
+                Thread.Sleep(15 * 1000);
+                game.Continue = false;
+            });
+            while (game.Continue)
+            {
+                // Game loop : update, draw and sleep
+                game.Update();
+                //game.Draw();
+                //game.Sleep();
+                if (game.x > int.MaxValue)
                 {
-                    // Game loop : update, draw and sleep
-                    game.Update();
-                    //game.Draw();
-                    //game.Sleep();
-                    if (game.x > int.MaxValue)
-                    {
-                        Console.WriteLine("overflow");
-                        break;
-                    }
+                    Console.WriteLine("score overflow");
+                    break;
                 }
-            }).Wait(15 * 1000);
+            }
             // Stop the game
             game.Stop();
             //Console.Clear();

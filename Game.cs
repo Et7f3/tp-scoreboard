@@ -82,6 +82,13 @@ namespace FlappyRunner
                 }
                 return false;
             }
+            set
+            {
+                if (!value)
+                    foreach (dynamic bird in this.birds)
+                        if (!bird.Dead)
+                            bird.Kill(this.score);
+            }
         }
 
         /// <summary>
@@ -193,74 +200,78 @@ namespace FlappyRunner
         /// </summary>
         public void Update()
         {
-            try
+            // Should we make the game harder ?
+            if (this.rnd.Next(Math.Max(100 - this.tick, 0)) == 0)
             {
-                // Should we make the game harder ?
-                if (this.rnd.Next(Math.Max(100 - this.tick, 0)) == 0)
+                // What should we make harder ?
+                switch (this.rnd.Next(3))
                 {
-                    // What should we make harder ?
-                    switch (this.rnd.Next(3))
-                    {
-                        // Decrease the free space
-                        case 0:
-                            this.free -= 1;
-                            if (this.free < this.drawer.Height / 6)
-                                this.free = this.drawer.Height / 6;
-                            break;
-                        // Decrease the step
-                        case 1:
-                            this.step -= 1;
-                            if (this.step < 10)
-                                this.step = 10;
-                            break;
-                        // Decrease the delta
-                        case 2:
-                            this.bound += 1;
-                            if (this.bound >= 40)
-                                this.bound = 40;
-                            break;
-                    }
-                    this.tick = 0;
+                    // Decrease the free space
+                    case 0:
+                        this.free -= 1;
+                        if (this.free < this.drawer.Height / 6)
+                            this.free = this.drawer.Height / 6;
+                        break;
+                    // Decrease the step
+                    case 1:
+                        this.step -= 1;
+                        if (this.step < 10)
+                            this.step = 10;
+                        break;
+                    // Decrease the delta
+                    case 2:
+                        this.bound += 1;
+                        if (this.bound >= 40)
+                            this.bound = 40;
+                        break;
                 }
-                else
-                    this.tick += 1;
-                // Add pipes while there is enough space to add one
-                while (this.pipes.PeekBack().X + this.step <= this.x + this.drawer.Width)
-                {
-                    this.GeneratePipe(this.pipes.PeekBack().X + this.step);
-                }
-                // Remove pipes that are gone
-                while (this.pipes.PeekFront().X < this.x - 2)
-                {
-                    this.pipes.PopFront();
-                    // Increase the score
-                    this.score += 1;
-                    // Decrease the sleep
-                    this.sleep -= 1;
-                }
-                // Take the first pipe
-                dynamic first = this.pipes.PeekFront();
-                foreach (dynamic bird in this.birds)
-                {
-                    // Don't check for dead birds
-                    if (bird.Dead)
-                        continue;
-                    //Console.WriteLine($"{this.drawer.GetType()}, {this.x.GetType()}, {this.pipes.GetType()}, \n ");
-                    // Update the bird
-                    bird.Update(this.drawer, this.x, this.pipes/*.DeepCopy(pipe => pipe.DeepCopy())*/);
-                    // Kill the bird if it collides with the first pipe
-                    if (first.Collides(this.x + 1, bird.Y))
-                    {
-                        bird.Kill(this.score);
-                    }
-                }
-                this.x += 1;
+                this.tick = 0;
             }
-            catch(ArgumentOutOfRangeException)
+            else
+                this.tick += 1;
+            // Add pipes while there is enough space to add one
+            while (this.pipes.PeekBack().X + this.step <= this.x + this.drawer.Width)
             {
+                this.GeneratePipe(this.pipes.PeekBack().X + this.step);
             }
+            // Remove pipes that are gone
+            while (this.pipes.PeekFront().X < this.x - 2)
+            {
+                this.pipes.PopFront();
+                // Increase the score
+                this.score += 1;
+                // Decrease the sleep
+                this.sleep -= 1;
+            }
+            // Take the first pipe
+            dynamic first = this.pipes.PeekFront();
+            foreach (dynamic bird in this.birds)
+            {
+                // Don't check for dead birds
+                if (bird.Dead)
+                    continue;
+                //Console.WriteLine($"{this.drawer.GetType()}, {this.x.GetType()}, {this.pipes.GetType()}, \n ");
+                // Update the bird
+                bird.Update(this.drawer, this.x, PipesDeepCopy(this.pipes));
+                // Kill the bird if it collides with the first pipe
+                if (first.Collides(this.x + 1, bird.Y))
+                {
+                    bird.Kill(this.score);
+                }
+            }
+            this.x += 1;
             if (this.sleep < 20)
                 this.sleep = 20;
+        }
+
+        dynamic PipesDeepCopy(dynamic pipes)
+        {
+            dynamic q = Activator.CreateInstance(Program.type_deque, new object[] { });
+
+            foreach (dynamic p in pipes)
+                q.PushBack(p.DeepCopy());
+
+            return q;
         }
 
         /// <summary>
