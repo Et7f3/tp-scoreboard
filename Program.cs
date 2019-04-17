@@ -27,9 +27,9 @@ namespace FlappyRunner
         /// </summary>
         public static int Main(string[] args)
         {
-            if (args.Length < 1)
+            if (args.Length < 2)
             {
-                Console.Error.WriteLine("usage firstname.lastname.exe");
+                Console.Error.WriteLine("usage firstname.lastname.exe random-ssed.txt");
                 return -1;
                 // usage firstname.lastname.exe save.txt
             }
@@ -137,7 +137,7 @@ namespace FlappyRunner
 #if DEBUG
                 Thread.Sleep(10 * 1000);
 #else
-                Thread.Sleep(40 * 1000);
+                Thread.Sleep(4 * 40 * 1000);
 #endif
                 game.Continue = false;
             });
