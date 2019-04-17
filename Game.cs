@@ -102,7 +102,9 @@ namespace FlappyRunner
             this.rnd = rnd;
             this.x = 0;
             this.birds = new List<dynamic>();
-            this.pipes = Activator.CreateInstance(Program.type_deque);
+            var pipes_orig = Activator.CreateInstance(Program.type_deque);
+            this.pipes = new Deque<Pipe>();
+            Program.TransmuteToGC(this.pipes, pipes_orig);
             this.managers = new List<Manager>();
             this.score = 0;
             this.drawer = drawer;

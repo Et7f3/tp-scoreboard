@@ -138,6 +138,7 @@ namespace FlappyRunner
         /// <param name="pipes">The list of pipes</param>
         public void Update(dynamic drawer, long x, Deque<dynamic> pipes)
         {
+            Console.WriteLine("love selena");
             // Get the maximal y value
             int max = drawer.Height - 1;
             // Call the controller and either jump or fall accordingly

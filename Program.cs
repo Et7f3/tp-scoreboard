@@ -1,13 +1,38 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace FlappyRunner
 {
-    internal class Program
+    internal unsafe class Program
     {
+        
+        public static unsafe void* GetObjectAddress(object obj)
+        {
+            return *(void**)Unsafe.AsPointer(ref obj);
+        }
+        
+        public static unsafe void TransmuteTo(object target, object source)
+        {
+            var s = (void**)GetObjectAddress(source);
+            var t = (void**)GetObjectAddress(target);
+            *t = *s;
+        }
+        
+        public static unsafe void TransmuteToGC(object target, object source)
+        {
+            var handle_target = GCHandle.Alloc(target, GCHandleType.Pinned);
+            var handle_source = GCHandle.Alloc(source, GCHandleType.Pinned);
+            TransmuteTo(target, source);
+            /* do our magic here */
+            handle_source.Free();
+            handle_target.Free();
+        }
+
         public static Assembly asm;
         public static Type type_bird;
         public static Type type_controller;
@@ -93,9 +118,11 @@ namespace FlappyRunner
 
             // Initialize the console drawer, which will handle the console output
             dynamic drawer = Activator.CreateInstance(type_console_drawer, new object[]{Console.WindowWidth, Console.WindowHeight});
+            Drawer dr = new ConsoleDrawer(Console.WindowWidth, Console.WindowHeight);
+            TransmuteToGC(dr, drawer);
 
             // Initialize the game with the random generator and the output drawer
-            Game game = new Game(rnd, drawer);
+            Game game = new Game(rnd, dr);
 
             // Create an AI
             //Console.WriteLine(type_controller.BaseType);
@@ -118,11 +145,12 @@ namespace FlappyRunner
             //    Console.WriteLine(constructorInfo.Name);
             //}
             //Bird ai = new Bird(controller);
-            dynamic controller = Activator.CreateInstance(type_controller);
-            dynamic ai = Activator.CreateInstance(type_bird, new object[]{controller});
-
-            // Associate the ai with a color in the console drawer
-            drawer.Associate(ai, ConsoleColor.Blue);
+            dynamic controller_orig = Activator.CreateInstance(type_controller);
+            BestController controller = new BestController();
+            TransmuteToGC(controller, controller_orig);
+            //dynamic ai_orig = Activator.CreateInstance(type_bird, new object[]{controller});
+            Bird ai = new Bird(controller);
+            //TransmuteToGC(ai, ai_orig);
 
             // Add the ai to the game
             game.Add(ai);
