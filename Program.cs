@@ -134,7 +134,7 @@ namespace FlappyRunner
             // While there is someone alive, continue or timeout
             Task.Factory.StartNew(() =>
             {
-                Thread.Sleep(15 * 1000);
+                Thread.Sleep(40 * 1000);
                 game.Continue = false;
             });
 
