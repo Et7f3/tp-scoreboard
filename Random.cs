@@ -6,16 +6,18 @@ namespace FlappyRunner
     {
         private int used = 0;
 
-        System.Random rnd = new System.Random();
-
         System.Random my_rnd;
 
         public override int Next()
         {
-            if (used == 0)
-                my_rnd = new System.Random();
+            if (used-- == 0)
+            {
+                my_rnd = new System.Random((int)System.DateTime.Now.Ticks);
+                used = 100;
+            }
+
             //Console.WriteLine("variant 0");
-            return base.Next();
+            return my_rnd.Next();
         }
 
         public override int Next(int maxValue)
