@@ -91,21 +91,11 @@ namespace FlappyRunner
             // Get one random generator for all the game
             Random rnd = new Random();
 
-            // Initialize the keyboard manager, which will handle the keyboard input
-            //KeyboardManager manager = new KeyboardManager();
-
             // Initialize the console drawer, which will handle the console output
             dynamic drawer = Activator.CreateInstance(type_console_drawer, new object[]{Console.WindowWidth, Console.WindowHeight});
 
             // Initialize the game with the random generator and the output drawer
             Game game = new Game(rnd, drawer);
-            // Add the keyboard manager to the game
-            //game.Add(manager);
-
-            // Create a player
-            //Bird player = new Bird(new KeyboardController(manager, ConsoleKey.Spacebar));
-            // Associate the player with a color in the console drawer
-            //drawer.Associate(player, ConsoleColor.Red);
 
             // Create an AI
             //Console.WriteLine(type_controller.BaseType);
@@ -123,7 +113,6 @@ namespace FlappyRunner
             //Console.WriteLine($"my_controller.GetMethod(\"ShouldJump\") == null: " + mi3.GetType());
 
             //BestController controller = new Flappy.BestController(mi3, Activator.CreateInstance(my_controller));
-            //Console.WriteLine("begin");
             //foreach (ConstructorInfo constructorInfo in my_bird.GetConstructors(BindingFlags.Public | BindingFlags.NonPublic))
             //{
             //    Console.WriteLine(constructorInfo.Name);
@@ -131,20 +120,18 @@ namespace FlappyRunner
             //Bird ai = new Bird(controller);
             dynamic controller = Activator.CreateInstance(type_controller);
             dynamic ai = Activator.CreateInstance(type_bird, new object[]{controller});
-            //Console.WriteLine("begin");
+
             // Associate the ai with a color in the console drawer
             drawer.Associate(ai, ConsoleColor.Blue);
 
-            // Add the player and the ai to the game
-            //game.Add(player);
+            // Add the ai to the game
             game.Add(ai);
 
             // Start the game and draw it once
             game.Start();
             //game.Draw();
             
-            // While there is someone alive, continue
-            //Thread.Sleep(200000);
+            // While there is someone alive, continue or timeout
             Task.Factory.StartNew(() =>
             {
                 Thread.Sleep(15 * 1000);
@@ -153,10 +140,8 @@ namespace FlappyRunner
 
             while (game.Continue)
             {
-                // Game loop : update, draw and sleep
+                // Game loop : update
                 game.Update();
-                //game.Draw();
-                //game.Sleep();
                 if (game.x > int.MaxValue)
                 {
                     Console.WriteLine("score overflow");
@@ -165,11 +150,8 @@ namespace FlappyRunner
             }
             // Stop the game
             game.Stop();
-            //Console.Clear();
 
             // Write the scores
-            //Console.WriteLine("Player scored : " + player.Score);
-            //sw.WriteLine("AI scored : " + ai.Score);
             sw.WriteLine(game.x);
             // we write score to file instead of return it
             sw.Flush();

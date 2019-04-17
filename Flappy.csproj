@@ -48,8 +48,6 @@
     <Compile Include="Deque.cs" />
     <Compile Include="Drawer.cs" />
     <Compile Include="Game.cs" />
-    <Compile Include="KeyboardController.cs" />
-    <Compile Include="KeyboardManager.cs" />
     <Compile Include="Pipe.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
