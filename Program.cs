@@ -40,9 +40,9 @@ namespace FlappyRunner
         }
 
         public static Assembly asm;
-        public static StreamWriter sw_score;
         public static StreamWriter sw_seed;
         public static StreamWriter sw_move;
+        public static StreamWriter sw_score;
         /// <summary>
         /// The main function:
         /// - Register the managers
@@ -55,14 +55,15 @@ namespace FlappyRunner
         {
             if (args.Length < 3)
             {
-                Console.Error.WriteLine("usage firstname.lastname.exe random-seed.txt move.txt");
+                Console.Error.WriteLine("usage random-seed.txt move.txt firstname.lastname.exe");
                 return -1;
                 // usage firstname.lastname.exe save.txt
             }
+
             //Console.WriteLine(args[0] + ".log");
-            sw_score = new StreamWriter(args[0] + ".log");
-            sw_seed = new StreamWriter(args[1]);
-            sw_move = new StreamWriter(args[2]);
+            sw_seed = new StreamWriter(args[0]);
+            sw_move = new StreamWriter(args[1]);
+            sw_score = new StreamWriter(args[2] + ".log");
 
             if (!File.Exists(args[0]))
             {
@@ -120,17 +121,17 @@ namespace FlappyRunner
                 game.Update();
             }
 
-            // Write the scores
-            sw_score.WriteLine(game.x);
-            // we write score to file instead of return it
-            sw_score.Flush();
-            sw_score.Close();
-
             sw_seed.Flush();
             sw_seed.Close();
 
             sw_move.Flush();
             sw_move.Close();
+
+            // Write the scores
+            sw_score.WriteLine(game.x);
+            // we write score to file instead of return it
+            sw_score.Flush();
+            sw_score.Close();
 
             return 0;// success
         }
