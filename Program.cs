@@ -61,20 +61,21 @@ namespace FlappyRunner
             {
                 Console.Error.WriteLine("usage random-seed.txt move.txt move_count firstname.lastname.exe");
                 return -1;
-                // usage firstname.lastname.exe save.txt
             }
 
-            //Console.WriteLine(args[0] + ".log");
             if (!File.Exists(args[0]))
                 File.Create(args[0]);
+
             sr_seed = new StreamReader(args[0]);
+
             // can't open in rw mode
             // fuck cdiese
             // sw_seed = new StreamWriter(args[0], true);
+
             sw_move = new StreamWriter(args[1]);
             sw_score = new StreamWriter(args[3] + ".log");
 
-            if (!File.Exists(args[0]))
+            if (!File.Exists(args[3]))
             {
                 Console.Error.WriteLine("assembly not exist");
                 return -2;
@@ -147,7 +148,6 @@ namespace FlappyRunner
             // Create an AI
             best_controller_orig = Activator.CreateInstance(best_controller_orig, new object[]{});
             BestController best_controller = new BestController();
-            //TransmuteToGC(best_controller_orig, best_controller);
             Bird ai = new Bird(best_controller_orig);
 
             type_bird = asm.GetType("Flappy.Bird");
@@ -174,7 +174,7 @@ namespace FlappyRunner
 #if DEBUG
                 Thread.Sleep(10 * 1000);
 #else
-                Thread.Sleep(4 * 40 * 1000);
+                Thread.Sleep(160 * 1000);
 #endif
                 game.Continue = false;
             });
@@ -201,6 +201,7 @@ namespace FlappyRunner
 
             // Write the scores
             sw_score.WriteLine(game.x);
+
             // we write score to file instead of return it
             sw_score.Flush();
             sw_score.Close();
