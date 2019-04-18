@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
@@ -41,9 +42,11 @@ namespace FlappyRunner
         }
 
         public static Assembly asm;
-        public static FileStream sw_seed;
+        public static StreamReader sr_seed;
+        public static StreamWriter sw_seed;
         public static StreamWriter sw_move;
         public static StreamWriter sw_score;
+
         /// <summary>
         /// The main function:
         /// - Register the managers
@@ -62,7 +65,12 @@ namespace FlappyRunner
             }
 
             //Console.WriteLine(args[0] + ".log");
-            sw_seed = File.Create(args[0]);
+            if (!File.Exists(args[0]))
+                File.Create(args[0]);
+            sr_seed = new StreamReader(args[0]);
+            // can't open in rw mode
+            // fuck cdiese
+            // sw_seed = new StreamWriter(args[0], true);
             sw_move = new StreamWriter(args[1]);
             sw_score = new StreamWriter(args[3] + ".log");
 
@@ -118,7 +126,7 @@ namespace FlappyRunner
             type_console_drawer = Activator.CreateInstance(type_console_drawer, new object[]{Console.WindowWidth, Console.WindowHeight});
 
             // Get one random generator for all the game
-            Random rnd = new Random();
+            Random rnd = new FlappyRunner.Random();
 
             // Initialize the console drawer, which will handle the console output
             ConsoleDrawer drawer = new ConsoleDrawer(Console.WindowWidth, Console.WindowHeight);
@@ -177,6 +185,13 @@ namespace FlappyRunner
                 // Game loop : update
                 game.Update();
             }
+
+            sr_seed.Close();
+
+            // hopefully we don't want to read will writting
+            sw_seed = new StreamWriter(args[0], true);
+
+            Random.seeds.ForEach(sw_seed.WriteLine);
 
             sw_seed.Flush();
             sw_seed.Close();
