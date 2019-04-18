@@ -19,22 +19,17 @@ namespace FlappyRunner
         /// <summary>
         /// The list of all the birds
         /// </summary>
-        private List<dynamic> birds;
-
-        /// <summary>
-        /// The list of all the managers
-        /// </summary>
-        private List<Manager> managers;
+        private List<Bird> birds;
 
         /// <summary>
         /// The list of all the pipes
         /// </summary>
-        private dynamic pipes;
+        private Deque<Pipe> pipes;
 
         /// <summary>
         /// The output drawer
         /// </summary>
-        private dynamic drawer;
+        private Drawer drawer;
 
         /// <summary>
         /// The current score
@@ -73,7 +68,7 @@ namespace FlappyRunner
         {
             get
             {
-                foreach (dynamic bird in this.birds)
+                foreach (Bird bird in this.birds)
                 {
                     if (!bird.Dead)
                     {
@@ -96,16 +91,13 @@ namespace FlappyRunner
         /// </summary>
         /// <param name="rnd">The random number generator</param>
         /// <param name="drawer">The output drawer</param>
-        public Game(Random rnd, dynamic drawer)
+        public Game(Random rnd, Drawer drawer)
         {
             // Initialize all the fields
             this.rnd = rnd;
             this.x = 0;
-            this.birds = new List<dynamic>();
-            var pipes_orig = Activator.CreateInstance(Program.type_deque);
+            this.birds = new List<Bird>();
             this.pipes = new Deque<Pipe>();
-            Program.TransmuteToGC(this.pipes, pipes_orig);
-            this.managers = new List<Manager>();
             this.score = 0;
             this.drawer = drawer;
             this.sleep = 150;
@@ -127,7 +119,7 @@ namespace FlappyRunner
         /// Add a new bird if it has not already been added
         /// </summary>
         /// <param name="bird">The bird to add</param>
-        public void Add(dynamic bird)
+        public void Add(Bird bird)
         {
             if (!this.birds.Contains(bird))
             {
@@ -137,50 +129,16 @@ namespace FlappyRunner
         }
 
         /// <summary>
-        /// Add a new manager if it has not already been aded
-        /// </summary>
-        /// <param name="manager">The manager to add</param>
-        public void Add(Manager manager)
-        {
-            if (!this.managers.Contains(manager))
-            {
-                this.managers.Add(manager);
-            }
-        }
-
-        /// <summary>
-        /// Start all the managers
-        /// </summary>
-        public void Start()
-        {
-            foreach (Manager manager in this.managers)
-            {
-                manager.Start();
-            }
-        }
-
-        /// <summary>
-        /// Stop all the managers
-        /// </summary>
-        public void Stop()
-        {
-            foreach (Manager manager in this.managers)
-            {
-                manager.Stop();
-            }
-        }
-
-        /// <summary>
         /// Generate a pipe
         /// </summary>
         /// <param name="pos">The x coordinate of the pipe</param>
         /// <returns>The generated pipe</returns>
-        private dynamic GeneratePipe(long pos)
+        private Pipe GeneratePipe(long pos)
         {
-            dynamic previous;
+            Pipe previous;
             if (this.pipes.Count == 0)
-                previous = Activator.CreateInstance(Program.type_pipe, new object[]{0, (this.drawer.Height - this.free) / 2, this.free,
-                                                                                       this.drawer.Height - this.free - (this.drawer.Height - this.free) / 2});
+                previous = new Pipe(0, (this.drawer.Height - this.free) / 2, this.free,
+                    this.drawer.Height - this.free - (this.drawer.Height - this.free) / 2);
             else
                 previous = this.pipes.PeekBack();
             int move = this.rnd.Next(-this.bound, this.bound + 1);
@@ -192,7 +150,7 @@ namespace FlappyRunner
             if (top < 0)
                 top = 0;
             int bottom = this.drawer.Height - top - free;
-            dynamic pipe = Activator.CreateInstance(Program.type_pipe, new object[]{pos, top, free, bottom});
+            Pipe pipe = new Pipe(pos, top, free, bottom);
             this.pipes.PushBack(pipe);
             return pipe;
         }
@@ -246,15 +204,14 @@ namespace FlappyRunner
                 this.sleep -= 1;
             }
             // Take the first pipe
-            dynamic first = this.pipes.PeekFront();
-            foreach (dynamic bird in this.birds)
+            Pipe first = this.pipes.PeekFront();
+            foreach (Bird bird in this.birds)
             {
                 // Don't check for dead birds
                 if (bird.Dead)
                     continue;
-                //Console.WriteLine($"{this.drawer.GetType()}, {this.x.GetType()}, {this.pipes.GetType()}, \n ");
                 // Update the bird
-                bird.Update(this.drawer, this.x, PipesDeepCopy(this.pipes));
+                bird.Update(this.drawer, this.x, this.pipes.DeepCopy(pipe => pipe.DeepCopy()));
                 // Kill the bird if it collides with the first pipe
                 if (first.Collides(this.x + 1, bird.Y))
                 {
@@ -266,16 +223,6 @@ namespace FlappyRunner
                 this.sleep = 20;
         }
 
-        dynamic PipesDeepCopy(dynamic pipes)
-        {
-            dynamic q = Activator.CreateInstance(Program.type_deque, new object[] { });
-
-            foreach (dynamic p in pipes)
-                q.PushBack(p.DeepCopy());
-
-            return q;
-        }
-
         /// <summary>
         /// Draw the game
         /// </summary>
@@ -284,14 +231,14 @@ namespace FlappyRunner
             // Clear the output
             this.drawer.Clear();
             // Draw each alive bird
-            foreach (dynamic bird in this.birds)
+            foreach (Bird bird in this.birds)
             {
                 if (bird.Dead)
                     continue;
                 this.drawer.Draw(bird);
             }
             // Draw each pipe
-            foreach (dynamic pipe in this.pipes)
+            foreach (Pipe pipe in this.pipes)
             {
                 this.drawer.Draw(pipe, x);
             }

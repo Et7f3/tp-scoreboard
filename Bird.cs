@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 
 namespace FlappyRunner
 {
@@ -122,7 +123,7 @@ namespace FlappyRunner
         /// </summary>
         /// <param name="controller">The new controller</param>
         /// <returns>A new bird</returns>
-        public Bird DeepCopy(dynamic controller)
+        public dynamic DeepCopy(dynamic controller)
         {
             Bird res = new Bird(controller);
             res.y = this.y;
@@ -136,16 +137,21 @@ namespace FlappyRunner
         /// <param name="drawer">The drawer</param>
         /// <param name="x">The x coordinate</param>
         /// <param name="pipes">The list of pipes</param>
-        public void Update(dynamic drawer, long x, Deque<dynamic> pipes)
+        public void Update(dynamic drawer, long x, dynamic pipes)
         {
-            Console.WriteLine("love selena");
             // Get the maximal y value
             int max = drawer.Height - 1;
             // Call the controller and either jump or fall accordingly
-            if (this.controller.ShouldJump(this, drawer, x, pipes))
+            Program.TransmuteToGC(pipes, Program.type_deque);
+            //Program.TransmuteToGC(this, Program.type_bird);
+            //Program.TransmuteToGC(x, (long)0);
+            dynamic mutant = this.DeepCopy(this.controller);
+            Program.TransmuteToGC(mutant, Program.type_bird);
+            if (this.controller.ShouldJump(mutant, drawer, x, pipes))
                 this.verticalSpeed = JUMP;
             else
                 this.verticalSpeed += GRAVITY;
+            Program.TransmuteToGC(this, Program.type_bird_orig);
             // Bounds checking of the speed
             if (this.verticalSpeed < MAXIMAL_UP)
                 this.verticalSpeed = MAXIMAL_UP;

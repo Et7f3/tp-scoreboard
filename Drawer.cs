@@ -16,7 +16,7 @@ namespace FlappyRunner
         /// Draw a bird
         /// </summary>
         /// <param name="bird">The bird to draw</param>
-        public abstract void Draw(dynamic bird);
+        public abstract void Draw(Bird bird);
 
         /// <summary>
         /// Draw a pipe

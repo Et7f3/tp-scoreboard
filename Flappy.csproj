@@ -7,8 +7,8 @@
     <ProjectGuid>{70FD17C9-D5FA-413D-90D3-FB6A4426BDC6}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Flappy</RootNamespace>
-    <AssemblyName>Flappy</AssemblyName>
+    <RootNamespace>FlappyRunner</RootNamespace>
+    <AssemblyName>FlappyRunner</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>.\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -31,7 +31,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-      <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
@@ -49,7 +49,6 @@
     <Compile Include="MaximaxController.cs" />
     <Compile Include="Bird.cs" />
     <Compile Include="ConsoleDrawer.cs" />
-    <Compile Include="Manager.cs" />
     <Compile Include="Controller.cs" />
     <Compile Include="Deque.cs" />
     <Compile Include="Drawer.cs" />
@@ -57,7 +56,9 @@
     <Compile Include="Pipe.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <!--
     <Compile Include="Random.cs" />
+    -->
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
