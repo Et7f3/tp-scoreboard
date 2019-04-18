@@ -64,7 +64,7 @@ namespace FlappyRunner
             }
 
             if (!File.Exists(args[0]))
-                File.Create(args[0]);
+                File.Create(args[0]).Close();
 
             sr_seed = new StreamReader(args[0]);
 
@@ -176,7 +176,7 @@ namespace FlappyRunner
 #else
                 Thread.Sleep(160 * 1000);
 #endif
-                game.Continue = false;
+                //game.Continue = false;
             });
 
             // While there is someone alive, continue
@@ -184,6 +184,8 @@ namespace FlappyRunner
             {
                 // Game loop : update
                 game.Update();
+                game.Draw();
+                game.Sleep();
             }
 
             sr_seed.Close();
