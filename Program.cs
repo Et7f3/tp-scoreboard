@@ -16,6 +16,7 @@ namespace FlappyRunner
         public static dynamic type_pipe;
         public static dynamic type_deque;
         public static dynamic type_console_drawer;
+        public static int move_count;
         
         public static unsafe void* GetObjectAddress(object obj)
         {
@@ -40,7 +41,7 @@ namespace FlappyRunner
         }
 
         public static Assembly asm;
-        public static StreamWriter sw_seed;
+        public static FileStream sw_seed;
         public static StreamWriter sw_move;
         public static StreamWriter sw_score;
         /// <summary>
@@ -53,17 +54,17 @@ namespace FlappyRunner
         /// </summary>
         public static int Main(string[] args)
         {
-            if (args.Length < 3)
+            if (args.Length < 4)
             {
-                Console.Error.WriteLine("usage random-seed.txt move.txt firstname.lastname.exe");
+                Console.Error.WriteLine("usage random-seed.txt move.txt move_count firstname.lastname.exe");
                 return -1;
                 // usage firstname.lastname.exe save.txt
             }
 
             //Console.WriteLine(args[0] + ".log");
-            sw_seed = new StreamWriter(args[0]);
+            sw_seed = File.Create(args[0]);
             sw_move = new StreamWriter(args[1]);
-            sw_score = new StreamWriter(args[2] + ".log");
+            sw_score = new StreamWriter(args[3] + ".log");
 
             if (!File.Exists(args[0]))
             {
@@ -73,6 +74,12 @@ namespace FlappyRunner
             }
 
             asm = Assembly.LoadFrom(args[0]);
+
+            if (int.TryParse(args[2], out move_count))
+            {
+                Console.Error.WriteLine("move_count non valide");
+                return -4;
+            }
 
             type_pipe = Activator.CreateInstance(asm.GetType("Flappy.Pipe"), new object[]{0, 0, 0, 0});
             type_deque = Activator.CreateInstance(asm.GetType("Flappy.Deque`1").MakeGenericType(type_pipe.GetType()), new object[]{});
