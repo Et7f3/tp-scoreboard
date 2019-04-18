@@ -172,7 +172,7 @@ namespace FlappyRunner
             Task.Factory.StartNew(() =>
             {
 #if DEBUG
-                Thread.Sleep(10 * 1000);
+                Thread.Sleep(160 * 1000);
 #else
                 Thread.Sleep(160 * 1000);
 #endif
@@ -184,8 +184,8 @@ namespace FlappyRunner
             {
                 // Game loop : update
                 game.Update();
-                game.Draw();
-                game.Sleep();
+                //game.Draw();
+                //game.Sleep();
             }
 
             sr_seed.Close();

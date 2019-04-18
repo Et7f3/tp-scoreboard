@@ -22,7 +22,7 @@ namespace FlappyRunner
             /// <summary>
             /// The data
             /// </summary>
-            public T Element;
+            public dynamic Element;
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace FlappyRunner
         /// Get the element at the front of the list
         /// </summary>
         /// <returns>The element at the front</returns>
-        public T PeekFront()
+        public dynamic PeekFront()
         {
             if (this.head == null)
             {
@@ -81,7 +81,7 @@ namespace FlappyRunner
         /// Get the element at the back of the list
         /// </summary>
         /// <returns>The element at the back</returns>
-        public T PeekBack()
+        public dynamic PeekBack()
         {
             if (this.tail == null)
             {
@@ -145,7 +145,7 @@ namespace FlappyRunner
         /// Add a new element to the front
         /// </summary>
         /// <param name="element">The element to add</param>
-        public void PushFront(T element)
+        public void PushFront(dynamic element)
         {
             Node newNode = new Node();
             newNode.Element = element;
@@ -168,7 +168,7 @@ namespace FlappyRunner
         /// Add a new element to the back
         /// </summary>
         /// <param name="element">The element to add</param>
-        public void PushBack(T element)
+        public void PushBack(dynamic element)
         {
             Node newNode = new Node();
             newNode.Element = element;
@@ -205,11 +205,16 @@ namespace FlappyRunner
         /// </summary>
         /// <param name="copy">The copy function</param>
         /// <returns>A new list</returns>
-        public Deque<T> DeepCopy(Func<T, T> copy)
+        public dynamic DeepCopy(Func<dynamic, dynamic> copy)
         {
-            Deque<T> res = new Deque<T>();
-            foreach (T el in this)
-                res.PushBack(copy(el));
+            dynamic res = new Deque<dynamic>();
+            Program.TransmuteToGC(res, Program.type_deque);
+            foreach (dynamic el in this)
+            {
+                dynamic e = copy(el);
+                Program.TransmuteToGC(e, Program.type_pipe);
+                res.PushBack(e);
+            }
             return res;
         }
 
