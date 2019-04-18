@@ -73,17 +73,49 @@ namespace FlappyRunner
                 // assembly not exist
             }
 
-            asm = Assembly.LoadFrom(args[0]);
+            asm = Assembly.LoadFrom(args[3]);
 
-            if (int.TryParse(args[2], out move_count))
+            if (!int.TryParse(args[2], out move_count))
             {
-                Console.Error.WriteLine("move_count non valide");
+                Console.Error.WriteLine($"move_count {args[2]} non valide");
                 return -4;
             }
 
-            type_pipe = Activator.CreateInstance(asm.GetType("Flappy.Pipe"), new object[]{0, 0, 0, 0});
-            type_deque = Activator.CreateInstance(asm.GetType("Flappy.Deque`1").MakeGenericType(type_pipe.GetType()), new object[]{});
-            type_console_drawer = Activator.CreateInstance(asm.GetType("Flappy.ConsoleDrawer"), new object[]{Console.WindowWidth, Console.WindowHeight});
+            type_pipe = asm.GetType("Flappy.Pipe");
+
+            if (type_pipe == null)
+            {
+                Console.Error.WriteLine("Flappy.Pipe not available");
+                return -3;
+                // file don't have right class
+            }
+
+            // since now Activator.CreateInstance
+            // should always work because all value are defined
+
+            type_pipe = Activator.CreateInstance(type_pipe, new object[]{0, 0, 0, 0});
+
+            type_deque = asm.GetType("Flappy.Deque`1");
+
+            if (type_deque == null)
+            {
+                Console.Error.WriteLine("Flappy.Deque`1 not available");
+                return -3;
+                // file don't have right class
+            }
+
+            type_deque = Activator.CreateInstance(type_deque.MakeGenericType(type_pipe.GetType()), new object[]{});
+
+            type_console_drawer = asm.GetType("Flappy.ConsoleDrawer");
+
+            if (type_console_drawer == null)
+            {
+                Console.Error.WriteLine("Flappy.ConsoleDrawer not available");
+                return -3;
+                // file don't have right class
+            }
+
+            type_console_drawer = Activator.CreateInstance(type_console_drawer, new object[]{Console.WindowWidth, Console.WindowHeight});
 
             // Get one random generator for all the game
             Random rnd = new Random();
@@ -95,12 +127,30 @@ namespace FlappyRunner
             // Initialize the game with the random generator and the output drawer
             Game game = new Game(rnd, drawer);
 
+            dynamic best_controller_orig = asm.GetType("Flappy.BestController");
+
+            if (best_controller_orig == null)
+            {
+                Console.Error.WriteLine("Flappy.ConsoleDrawer not available");
+                return -3;
+                // file don't have right class
+            }
+
             // Create an AI
-            dynamic best_controller_orig = Activator.CreateInstance(asm.GetType("Flappy.BestController"), new object[]{});
+            best_controller_orig = Activator.CreateInstance(best_controller_orig, new object[]{});
             BestController best_controller = new BestController();
             //TransmuteToGC(best_controller_orig, best_controller);
             Bird ai = new Bird(best_controller_orig);
-            type_bird = Activator.CreateInstance(asm.GetType("Flappy.Bird"), new object[] {best_controller_orig});
+
+            type_bird = asm.GetType("Flappy.Bird");
+
+            if (type_bird == null)
+            {
+                Console.Error.WriteLine("Flappy.Bird not available");
+                return -3;
+                // file don't have right class
+            }
+            type_bird = Activator.CreateInstance(type_bird, new object[] {best_controller_orig});
             type_bird_orig = new Bird(new BestController());
 
  
