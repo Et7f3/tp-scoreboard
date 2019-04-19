@@ -187,14 +187,17 @@ namespace FlappyRunner
                 game.Continue = false;
             });
 
-            // While there is someone alive, continue
-            while (game.Continue)
+            Task.Factory.StartNew(() =>
             {
-                // Game loop : update
-                game.Update();
-                //game.Draw();
-                //game.Sleep();
-            }
+                // While there is someone alive, continue
+                while (game.Continue)
+                {
+                    // Game loop : update
+                    game.Update();
+                    //game.Draw();
+                    //game.Sleep();
+                }
+            }).Wait((time + 10) * 1000);
 
             sr_seed.Close();
 
