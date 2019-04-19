@@ -4,6 +4,23 @@ using System.Linq;
 
 namespace FlappyRunner
 {
+    public struct s_move
+    {
+        private long _position;
+        private bool _state;
+
+        public s_move(long position, bool state)
+        {
+            _position = position;
+            _state = state;
+        }
+
+        public override string ToString()
+        {
+            return $"{{\"state\":\"{(_state ? "up" : "down")}\",\"pos\":{_position}}}";
+        }
+    }
+
     public class Bird
     {
         /// <summary>
@@ -96,33 +113,6 @@ namespace FlappyRunner
             }
         }
 
-        /*public struct s_move
-        {
-            private long _position;
-            private bool _state;
-
-            public s_move(long position, bool state)
-            {
-                _position = position;
-                _state = state;
-            }
-
-            public override string ToString()
-            {
-                return $"{{\"state\":\"{(_state ? "up" : "down")}\",\"pos\":{_position}}}";
-            }
-        }*/
-
-        /// <summary>
-        /// The last Program.move_count moves
-        /// </summary>
-        //public s_move[] last_moves;
-
-        /// <summary>
-        /// The index of last move added to last_moves array
-        /// </summary>
-        //public int last_move_added;
-
         /// <summary>
         /// Initialize a bird
         /// </summary>
@@ -134,8 +124,6 @@ namespace FlappyRunner
             this.verticalSpeed = 0;
             this.controller = controller;
             this.score = -1;
-            //this.last_moves = new s_move[Program.move_count];
-            //this.last_move_added = 0;
         }
 
         /// <summary>
@@ -161,11 +149,6 @@ namespace FlappyRunner
             return res;
         }
 
-        /*public string string_of_bird()
-        {
-            return $"{{\"name\":\"\",\"color\":\"#666666\",\"position\":[{String.Join(",", this.last_moves.Select(pos => pos.ToString()))}]}}";
-        }*/
-
         /// <summary>
         /// Update a bird
         /// </summary>
@@ -184,8 +167,8 @@ namespace FlappyRunner
             Program.TransmuteToGC(mutant, Program.type_bird);
             bool state = this.controller.ShouldJump(mutant, drawer, x, pipes);
             
-            //this.last_moves[this.last_move_added] = new s_move(x, state);
-            //this.last_move_added = (this.last_move_added + 1) % Program.move_count;
+            Game.last_moves[Game.last_move_added] = new s_move(x, state);
+            Game.last_move_added = (Game.last_move_added + 1) % Program.move_count;
 
             if (state)
                 this.verticalSpeed = JUMP;

@@ -170,6 +170,7 @@ namespace FlappyRunner
                 return -3;
                 // file don't have right class
             }
+
             type_bird = Activator.CreateInstance(type_bird, new object[] {best_controller_orig});
             type_bird_orig = new Bird(new BestController());
 
@@ -179,6 +180,9 @@ namespace FlappyRunner
 
             // Add the ai to the game
             game.Add(ai);
+            
+            Game.last_moves = new s_move[move_count];
+            Game.last_move_added = 0;
 
             // While there is someone alive, continue or timeout
             Task.Factory.StartNew(() =>

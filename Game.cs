@@ -75,6 +75,16 @@ namespace FlappyRunner
         public int last_pipe_added;
 
         /// <summary>
+        /// The last Program.move_count moves
+        /// </summary>
+        public static s_move[] last_moves;
+
+        /// <summary>
+        /// The index of last move added to last_moves array
+        /// </summary>
+        public static int last_move_added;
+
+        /// <summary>
         /// Is true if there is one player alive
         /// </summary>
         public bool Continue
@@ -280,12 +290,17 @@ namespace FlappyRunner
         {
             Program.sw_move.Write($"{{\"width\":{drawer.Width},\"height\":{drawer.Height},\"pipes\":[");
             Program.sw_move.Write(String.Join(",", this.last_pipes.Select(p => string_of_pipe(p))));
-            Program.sw_move.Write($"], \"birds\": []}}");//{this.birds[0].string_of_bird()}
+            Program.sw_move.Write($"], \"birds\": [{string_of_bird()}]}}");
         }
 
         private string string_of_pipe(dynamic p)
         {
             return $"{{\"pos\":{p.X},\"top\":{p.TopPipeHeight},\"free\":{p.FreeHeight},\"bottom\":{p.BottomPipeHeight}}}";
+        }
+
+        public static string string_of_bird()
+        {
+            return $"{{\"name\":\"\",\"color\":\"#666666\",\"position\":[{String.Join(",", last_moves.Select(pos => pos.ToString()))}]}}";
         }
     }
 }
