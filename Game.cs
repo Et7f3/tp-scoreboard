@@ -300,7 +300,7 @@ namespace FlappyRunner
 
         public static string string_of_bird()
         {
-            return $"{{\"name\":\"\",\"color\":\"#666666\",\"position\":[{String.Join(",", last_moves.Select(pos => pos.ToString()))}]}}";
+            return $"{{\"name\":\"\",\"color\":\"#666666\",\"positions\":[{String.Join(",", last_moves.Select(pos => pos.ToString()))}]}}";
         }
     }
 }
