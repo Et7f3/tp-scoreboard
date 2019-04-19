@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net.Configuration;
+using System.Net.Mime;
 using System.Threading;
 
 namespace FlappyRunner
@@ -62,6 +65,16 @@ namespace FlappyRunner
         private int free;
 
         /// <summary>
+        /// The last Program.move_count pipes
+        /// </summary>
+        public dynamic[] last_pipes;
+
+        /// <summary>
+        /// The index of last pipe added to last_pipes array
+        /// </summary>
+        public int last_pipe_added;
+
+        /// <summary>
         /// Is true if there is one player alive
         /// </summary>
         public bool Continue
@@ -104,6 +117,8 @@ namespace FlappyRunner
             this.step = 20;
             this.tick = 0;
             this.free = this.drawer.Height - (this.drawer.Height / 3) * 2;
+            this.last_pipes = new dynamic[Program.move_count];
+            this.last_pipe_added = 0;
             this.bound = 10;
             // Generate the first pipes
             long pos = this.step;
@@ -136,6 +151,7 @@ namespace FlappyRunner
         private Pipe GeneratePipe(long pos)
         {
             Pipe previous;
+
             if (this.pipes.Count == 0)
                 previous = new Pipe(0, (this.drawer.Height - this.free) / 2, this.free,
                     this.drawer.Height - this.free - (this.drawer.Height - this.free) / 2);
@@ -152,6 +168,9 @@ namespace FlappyRunner
             int bottom = this.drawer.Height - top - free;
             Pipe pipe = new Pipe(pos, top, free, bottom);
             this.pipes.PushBack(pipe);
+            this.last_pipes[this.last_pipe_added] = pipe;
+            this.last_pipe_added = (this.last_pipe_added + 1) % Program.move_count;
+
             return pipe;
         }
 
@@ -252,6 +271,21 @@ namespace FlappyRunner
         public void Sleep()
         {
             Thread.Sleep(this.sleep);
+        }
+
+        /// <summary>
+        /// Save last moves
+        /// </summary>
+        public void Save()
+        {
+            Program.sw_move.Write($"{{\"width\":{drawer.Width},\"height\":{drawer.Height},\"pipes\":[");
+            Program.sw_move.Write(String.Join(",", this.last_pipes.Select(p => string_of_pipe(p))));
+            Program.sw_move.Write($"], \"birds\": []}}");//{this.birds[0].string_of_bird()}
+        }
+
+        private string string_of_pipe(dynamic p)
+        {
+            return $"{{\"pos\":{p.X},\"top\":{p.TopPipeHeight},\"free\":{p.FreeHeight},\"bottom\":{p.BottomPipeHeight}}}";
         }
     }
 }

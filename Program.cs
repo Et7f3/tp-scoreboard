@@ -18,7 +18,7 @@ namespace FlappyRunner
         public static dynamic type_deque;
         public static dynamic type_console_drawer;
         public static int move_count;
-        
+
         public static unsafe void* GetObjectAddress(object obj)
         {
             return *(void**)Unsafe.AsPointer(ref obj);
@@ -57,11 +57,16 @@ namespace FlappyRunner
         /// </summary>
         public static int Main(string[] args)
         {
-            if (args.Length < 4)
+            string exec;
+            int time;
+
+            if (args.Length < 5)
             {
-                Console.Error.WriteLine("usage random-seed.txt move.txt move_count firstname.lastname.exe");
+                Console.Error.WriteLine("usage random-seed.txt moves.json move_count time_in_second firstname.lastname.exe");
                 return -1;
             }
+
+            exec = args[4];
 
             if (!File.Exists(args[0]))
                 File.Create(args[0]).Close();
@@ -73,20 +78,27 @@ namespace FlappyRunner
             // sw_seed = new StreamWriter(args[0], true);
 
             sw_move = new StreamWriter(args[1]);
-            sw_score = new StreamWriter(args[3] + ".log");
+            sw_score = new StreamWriter(exec + ".log");
 
-            if (!File.Exists(args[3]))
+            if (!File.Exists(exec))
             {
                 Console.Error.WriteLine("assembly not exist");
                 return -2;
                 // assembly not exist
             }
 
-            asm = Assembly.LoadFrom(args[3]);
+            asm = Assembly.LoadFrom(exec);
 
             if (!int.TryParse(args[2], out move_count))
             {
                 Console.Error.WriteLine($"move_count {args[2]} non valide");
+                return -4;
+            }
+
+
+            if (!int.TryParse(args[3], out time))
+            {
+                Console.Error.WriteLine($"time {args[2]} non valide");
                 return -4;
             }
 
@@ -171,12 +183,8 @@ namespace FlappyRunner
             // While there is someone alive, continue or timeout
             Task.Factory.StartNew(() =>
             {
-#if DEBUG
-                Thread.Sleep(160 * 1000);
-#else
-                Thread.Sleep(160 * 1000);
-#endif
-                //game.Continue = false;
+                Thread.Sleep(time * 1000);
+                game.Continue = false;
             });
 
             // While there is someone alive, continue
@@ -198,6 +206,7 @@ namespace FlappyRunner
             sw_seed.Flush();
             sw_seed.Close();
 
+            game.Save();
             sw_move.Flush();
             sw_move.Close();
 
